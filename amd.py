@@ -23,15 +23,19 @@ def getInfo(item):
 	for link in soup.find_all('a'):
 		link = "https://amd.com" + link.get('href')
 	if "Add to cart" in str(status):
-		status = "In stock"
-		emoji = ":white_check_mark:"
+		if "Graphics" in name:
+			status = "In stock"
+			emoji = ":white_check_mark: <@&826952371841138739>"
+		else:
+			status = "In stock"
+			emoji = ":white_check_mark:"
 	elif "Out of Stock" in str(status):
 		status = "Out of Stock"
 		emoji = ":x:"
 		link = ""
 	return name, status, link, emoji
 
-
+	
 def reqAmd():
 	url = "https://www.amd.com/en/direct-buy/be"
 	headers = {
