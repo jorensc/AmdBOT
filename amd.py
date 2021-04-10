@@ -1,4 +1,5 @@
 import requests
+from datetime import datetime as d
 from bs4 import BeautifulSoup
 import time
 import re
@@ -7,8 +8,24 @@ import hashlib
 totalInfo = ""
 
 def discordWebook(message):
+	cloc = d.utcnow()
+	cloc = cloc.strftime("%Y-%m-%dT%H:%M:%S.000Z")
 	url = "https://discord.com/api/webhooks/822966258592383016/mSYQWmpeaOK6-73SYHneBgFxPZEkjJLhQTI5Sgp6amEjum2fyxpxsuymIuoWyKscdaQS"
-	payload = {"content": message}
+	payload = {"embeds": [
+        {
+        	"author": {
+                "name": "AMD STOCK CHECKER",
+                "url": "https://www.amd.com/en/direct-buy/be",
+                "icon_url": "https://logodix.com/logo/606655.png"
+            },
+            "description": message,
+            "timestamp": cloc,
+            "color": 16711680,
+            "footer": {
+            	"text": "By Tiddo and Joren"
+            }
+        }
+    ]}
 	headers = {
 	    "Content-Type": "application/json"
 	}
@@ -47,12 +64,15 @@ def reqAmd():
 	items = soup.find_all("div", {"class": "direct-buy"})
 	return items
 
-items = reqAmd()
-for item in items:
-	name, status, link, emoji = getInfo(item)
-	# info = f'Name: {name}\nStatus: {status}\nLink: {link}'
-	info = f'{name} {emoji} {link}'
-	print(info)
-	totalInfo = totalInfo + info + "\n"
-
-discordWebook(totalInfo)
+while True:
+	items = reqAmd()
+	for item in items:
+		name, status, link, emoji = getInfo(item)
+		# info = f'Name: {name}\nStatus: {status}\nLink: {link}'
+		info = f'[{name}]({link}) {emoji}'
+		print(info)
+		totalInfo = totalInfo + info + "\n"
+	
+	discordWebook(totalInfo)
+	totalInfo = ""
+	time.sleep(60)
