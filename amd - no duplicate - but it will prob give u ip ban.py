@@ -4,8 +4,8 @@ from bs4 import BeautifulSoup
 import time
 import re
 import hashlib
-from receipt import rec_gen
 
+oldInfo = ""
 totalInfo = ""
 
 def discordWebook(message):
@@ -45,14 +45,17 @@ def getInfo(item):
 		if "Graphics" in name:
 			status = "In stock"
 			emoji = ":white_check_mark: <@&826952371841138739>"
+			info = f'[{name}]({link}) {emoji}'
 		else:
 			status = "In stock"
 			emoji = ":white_check_mark:"
+			info = f'[{name}]({link}) {emoji}'
 	elif "Out of Stock" in str(status):
 		status = "Out of Stock"
 		emoji = ":x:"
-		link = ""
-	return name, status, link, emoji
+		link = "Imagine_discord_mobile_noob"
+		info = f'{name} {emoji}'
+	return info
 
 	
 def reqAmd():
@@ -69,12 +72,18 @@ def reqAmd():
 while True:
 	items = reqAmd()
 	for item in items:
-		name, status, link, emoji = getInfo(item)
+		# name, status, link, emoji = getInfo(item)
+		info = getInfo(item)
 		# info = f'Name: {name}\nStatus: {status}\nLink: {link}'
-		info = f'[{name}]({link}) {emoji}'
-		print(info)
+		# info = f'[{name}]({link}) {emoji}'
 		totalInfo = totalInfo + info + "\n"
+	if totalInfo != oldInfo:
+		discordWebook(totalInfo)
+		print(totalInfo)
+		oldInfo = totalInfo
+		totalInfo = ""
+	else:
+		print("Already send")	
+		totalInfo = ""
 	
-	discordWebook(totalInfo)
-	totalInfo = ""
-	time.sleep(60)
+	time.sleep(10)
