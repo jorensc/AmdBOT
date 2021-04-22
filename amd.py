@@ -4,7 +4,6 @@ from bs4 import BeautifulSoup
 import time
 import re
 import hashlib
-from receipt import rec_gen
 
 totalInfo = ""
 
