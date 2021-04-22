@@ -7,27 +7,48 @@ import hashlib
 
 oldInfo = ""
 totalInfo = ""
+# Role to ping here
+roleID = "826952371841138739"
 
-def discordWebook(message):
+def discordWebook(message, isGpu):
 	cloc = d.utcnow()
 	cloc = cloc.strftime("%Y-%m-%dT%H:%M:%S.000Z")
 	# Discord webhook here
 	url = ""
-	payload = {"embeds": [
-        {
-        	"author": {
-                "name": "AMD STOCK CHECKER",
-                "url": "https://www.amd.com/en/direct-buy/be",
-                "icon_url": "https://logodix.com/logo/606655.png"
-            },
-            "description": message,
-            "timestamp": cloc,
-            "color": 16711680,
-            "footer": {
-            	"text": "By Tiddo and Joren"
-            }
-        }
-    ]}
+	if isGpu:
+		payload = {
+		"content":f"||<@&{roleID}>||",
+		"embeds": [
+    	    {
+    	    	"author": {
+    	            "name": "AMD STOCK CHECKER",
+    	            "url": "https://www.amd.com/en/direct-buy/be",
+    	            "icon_url": "https://logodix.com/logo/606655.png"
+    	        },
+    	        "description": message,
+    	        "timestamp": cloc,
+    	        "color": 16711680,
+    	        "footer": {
+    	        	"text": "By Tiddo and Joren"
+    	        }
+    	    }
+    	]}
+	else:
+		payload = {"embeds": [
+    	    {
+    	    	"author": {
+    	            "name": "AMD STOCK CHECKER",
+    	            "url": "https://www.amd.com/en/direct-buy/be",
+    	            "icon_url": "https://logodix.com/logo/606655.png"
+    	        },
+    	        "description": message,
+    	        "timestamp": cloc,
+    	        "color": 16711680,
+    	        "footer": {
+    	        	"text": "By Tiddo and Joren"
+    	        }
+    	    }
+    	]}
 	headers = {
 	    "Content-Type": "application/json"
 	}
@@ -44,18 +65,21 @@ def getInfo(item):
 	if "Add to cart" in str(status):
 		if "Graphics" in name:
 			status = "In stock"
-			emoji = ":white_check_mark: <@&826952371841138739>"
+			emoji = ":white_check_mark:"
 			info = f'[{name}]({link}) {emoji}'
+			hasGpu = True
 		else:
 			status = "In stock"
 			emoji = ":white_check_mark:"
 			info = f'[{name}]({link}) {emoji}'
+			hasGpu = False
 	elif "Out of Stock" in str(status):
 		status = "Out of Stock"
 		emoji = ":x:"
 		link = "Imagine_discord_mobile_noob"
 		info = f'{name} {emoji}'
-	return info
+		hasGpu = False
+	return info, hasGpu
 
 	
 def reqAmd():
@@ -70,15 +94,18 @@ def reqAmd():
 	return items
 
 while True:
+	gpuAv = False
 	items = reqAmd()
 	for item in items:
 		# name, status, link, emoji = getInfo(item)
-		info = getInfo(item)
+		info, hasGpu = getInfo(item)
+		if hasGpu:
+			gpuAv = True
 		# info = f'Name: {name}\nStatus: {status}\nLink: {link}'
 		# info = f'[{name}]({link}) {emoji}'
 		totalInfo = totalInfo + info + "\n"
 	if totalInfo != oldInfo:
-		discordWebook(totalInfo)
+		discordWebook(totalInfo, gpuAv)
 		print(totalInfo)
 		oldInfo = totalInfo
 		totalInfo = ""
